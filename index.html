@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Treino ABC</title>
+
+<style>
+:root{
+  --bg:#0f172a;
+  --card:#111827;
+  --border:rgba(255,255,255,.08);
+  --text:#f1f5f9;
+  --muted:#94a3b8;
+  --active1:#6366f1;
+  --active2:#8b5cf6;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui;
+  background:linear-gradient(180deg,#0f172a,#020617);
+  color:var(--text);
+}
+
+/* Header */
+header{
+  padding:20px;
+  text-align:center;
+}
+
+/* Botões estilo da imagem */
+.day-buttons{
+  display:flex;
+  justify-content:center;
+  gap:18px;
+  flex-wrap:wrap;
+  margin-bottom:25px;
+}
+
+.day-btn{
+  padding:14px 26px;
+  border-radius:40px;
+  border:none;
+  background:#e5e7eb;
+  color:#111827;
+  font-weight:600;
+  cursor:pointer;
+  transition:.2s;
+  box-shadow:0 6px 15px rgba(0,0,0,.15);
+}
+
+.day-btn.active{
+  background:linear-gradient(135deg,var(--active1),var(--active2));
+  color:white;
+  box-shadow:0 10px 25px rgba(99,102,241,.4);
+}
+
+.day-btn:hover{
+  transform:translateY(-2px);
+}
+
+/* Grid */
+.container{
+  max-width:1200px;
+  margin:auto;
+  padding:0 20px 40px 20px;
+}
+
+.grid{
+  display:grid;
+  gap:20px;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  overflow:hidden;
+  box-shadow:0 15px 30px rgba(0,0,0,.4);
+  transition:.2s;
+}
+
+.card:hover{
+  transform:translateY(-5px);
+}
+
+.card img{
+  width:100%;
+  aspect-ratio:1/1;
+  object-fit:cover;
+}
+
+.card-content{
+  padding:14px;
+}
+
+.card-content h3{
+  margin:0;
+  font-size:15px;
+}
+
+.card-content p{
+  margin:6px 0 0;
+  font-size:12px;
+  color:var(--muted);
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>Treino ABC</h1>
+
+  <div class="day-buttons">
+    <button class="day-btn active" data-day="Segunda">Segunda-feira</button>
+    <button class="day-btn" data-day="Terca">Terça-feira</button>
+    <button class="day-btn" data-day="Quinta">Quinta-feira</button>
+    <button class="day-btn" data-day="Sexta">Sexta-feira</button>
+  </div>
+</header>
+
+<div class="container">
+  <div class="grid" id="grid"></div>
+</div>
+
+<script>
+const TREINOS = {
+  "Segunda":[
+    "desenvolvimento_halter.png",
+    "desenvolvimento_maquina.png",
+    "elevacao_lateral.png",
+    "supino_reto.png",
+    "triceps_corda.png",
+    "z_esteira.png"
+  ],
+  "Terca":[
+    "puxada_frente.png",
+    "remada_baixa.png",
+    "remada_maquina.png",
+    "rosca_alternada.png",
+    "rosca_direta.png",
+    "z_esteira.png"
+  ],
+  "Quinta":[
+    "agachamento_smith.png",
+    "cadeira_flexora.png",
+    "leg_press.png",
+    "mesa_flexora.png",
+    "panturrilha.png",
+    "z_esteira.png"
+  ],
+  "Sexta":[
+    "desenvolvimento_halter.png",
+    "desenvolvimento_maquina.png",
+    "elevacao_lateral.png",
+    "supino_reto.png",
+    "triceps_corda.png",
+    "z_esteira.png"
+  ]
+};
+
+const grid = document.getElementById("grid");
+const buttons = document.querySelectorAll(".day-btn");
+
+function formatName(file){
+  return file.replace(".png","").replace(/_/g," ")
+    .replace(/\b\w/g,l=>l.toUpperCase());
+}
+
+function render(day){
+  grid.innerHTML = "";
+  TREINOS[day].forEach(file=>{
+    const card = document.createElement("div");
+    card.className="card";
+    card.innerHTML=`
+      <img src="${day}/${file}" alt="">
+      <div class="card-content">
+        <h3>${formatName(file)}</h3>
+        <p>${day}/${file}</p>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+buttons.forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    buttons.forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    render(btn.dataset.day);
+  });
+});
+
+render("Segunda");
+</script>
+
+</body>
+</html>
