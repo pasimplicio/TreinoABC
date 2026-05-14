@@ -1,0 +1,824 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="description" content="Planilha de treino ABCD para hipertrofia — séries, repetições, timer de descanso e checklist."/>
+<meta name="theme-color" content="#0f172a"/>
+<link rel="manifest" href="manifest.json"/>
+<title>Treino ABC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+/* ── VARIABLES ── */
+:root{
+  --bg:#0f172a;
+  --card:rgba(17,24,39,.85);
+  --border:rgba(255,255,255,.08);
+  --text:#f1f5f9;
+  --muted:#94a3b8;
+  --a1:#6366f1;
+  --a2:#8b5cf6;
+  --ok:#10b981;
+  --glass:rgba(255,255,255,.04);
+  --gborder:rgba(255,255,255,.1);
+}
+
+/* ── BASE ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+body{
+  font-family:'Inter',system-ui,sans-serif;
+  background:linear-gradient(160deg,#0f172a 0%,#020617 100%);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ── HEADER ── */
+header{
+  padding:2rem 1.25rem 1.25rem;
+  text-align:center;
+}
+
+.logo{font-size:2.75rem;margin-bottom:.25rem}
+
+header h1{
+  font-size:1.8rem;
+  font-weight:800;
+  background:linear-gradient(135deg,#fff 0%,var(--a2) 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  margin-bottom:.25rem;
+}
+
+.header-sub{font-size:.8rem;color:var(--muted);margin-bottom:1.5rem}
+
+/* ── DAY BUTTONS ── */
+.day-buttons{
+  display:flex;
+  justify-content:center;
+  gap:.625rem;
+  flex-wrap:wrap;
+}
+
+.day-btn{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:.2rem;
+  padding:.7rem 1rem;
+  border-radius:.875rem;
+  border:1px solid var(--gborder);
+  background:var(--glass);
+  color:var(--muted);
+  font-family:'Inter',system-ui,sans-serif;
+  cursor:pointer;
+  transition:all .2s ease;
+  backdrop-filter:blur(8px);
+  position:relative;
+}
+
+.day-btn .b-icon{font-size:1.35rem}
+.day-btn .b-day{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.day-btn .b-focus{font-size:.62rem;color:var(--muted);font-weight:400}
+
+.day-btn:hover{transform:translateY(-2px);border-color:var(--a1);color:var(--text)}
+
+.day-btn.active{
+  background:linear-gradient(135deg,var(--a1),var(--a2));
+  border-color:transparent;
+  color:#fff;
+  box-shadow:0 8px 22px rgba(99,102,241,.4);
+}
+
+.day-btn.active .b-focus{color:rgba(255,255,255,.7)}
+
+.day-btn.hoje::after{
+  content:'hoje';
+  position:absolute;
+  top:-7px;
+  font-size:.58rem;
+  font-weight:700;
+  color:var(--ok);
+  background:#0f172a;
+  padding:0 5px;
+  border-radius:100px;
+  border:1px solid var(--ok);
+}
+
+/* ── PROGRESS ── */
+.progress-wrap{max-width:960px;margin:.75rem auto 0;padding:0 1.25rem 1.25rem}
+
+.progress-meta{
+  display:flex;
+  justify-content:space-between;
+  font-size:.75rem;
+  color:var(--muted);
+  margin-bottom:.4rem;
+}
+
+.progress-bar{
+  height:5px;
+  background:rgba(255,255,255,.07);
+  border-radius:100px;
+  overflow:hidden;
+}
+
+.progress-fill{
+  height:100%;
+  background:linear-gradient(90deg,var(--a1),var(--a2));
+  border-radius:100px;
+  width:0%;
+  transition:width .5s ease;
+}
+
+/* ── MAIN ── */
+main{max-width:1200px;margin:0 auto;padding:0 1.25rem 4rem}
+
+/* ── DAY HEADER ── */
+.day-header{
+  display:flex;
+  align-items:center;
+  gap:.875rem;
+  padding:1rem 1.25rem;
+  background:var(--glass);
+  border:1px solid var(--gborder);
+  border-radius:1rem;
+  backdrop-filter:blur(8px);
+  margin-bottom:1rem;
+}
+
+.dh-icon{font-size:2.25rem;flex-shrink:0}
+.dh-title{font-size:1.05rem;font-weight:700}
+.dh-sub{font-size:.75rem;color:var(--muted);margin-top:.15rem}
+
+/* ── SECTION CARDS ── */
+.section-card{
+  display:flex;
+  align-items:flex-start;
+  gap:.875rem;
+  padding:.875rem 1.1rem;
+  background:var(--glass);
+  border:1px solid var(--gborder);
+  border-radius:1rem;
+  backdrop-filter:blur(8px);
+  margin-bottom:1rem;
+}
+
+.sc-icon{font-size:1.75rem;flex-shrink:0;margin-top:.1rem}
+.sc-body h3{font-size:.875rem;font-weight:700;margin-bottom:.2rem}
+.sc-body p{font-size:.75rem;color:var(--muted);line-height:1.55}
+
+/* ── GRID ── */
+.grid{
+  display:grid;
+  gap:.875rem;
+  grid-template-columns:repeat(auto-fill,minmax(275px,1fr));
+  margin-bottom:1rem;
+}
+
+/* ── EXERCISE CARD ── */
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:1rem;
+  overflow:hidden;
+  box-shadow:0 10px 28px rgba(0,0,0,.4);
+  transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease;
+  backdrop-filter:blur(8px);
+  animation:fadeUp .4s ease both;
+  opacity:0;
+}
+
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(14px)}
+  to  {opacity:1;transform:translateY(0)}
+}
+
+.card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 20px 40px rgba(0,0,0,.5);
+}
+
+.card.done{
+  border-color:var(--ok);
+  box-shadow:0 0 0 1px var(--ok),0 10px 28px rgba(16,185,129,.12);
+}
+
+/* ── CARD IMAGE ── */
+.card-img{position:relative}
+
+.card-img img{
+  width:100%;
+  aspect-ratio:1/1;
+  object-fit:cover;
+  display:block;
+}
+
+.check-btn{
+  position:absolute;
+  top:.625rem;
+  right:.625rem;
+  width:2rem;
+  height:2rem;
+  border-radius:50%;
+  border:2px solid rgba(255,255,255,.25);
+  background:rgba(0,0,0,.45);
+  backdrop-filter:blur(4px);
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:.9rem;
+  color:transparent;
+  transition:all .2s ease;
+}
+
+.check-btn:hover{border-color:var(--ok)}
+
+.card.done .check-btn{
+  background:var(--ok);
+  border-color:var(--ok);
+  color:#fff;
+}
+
+.muscle-tag{
+  position:absolute;
+  bottom:.5rem;
+  left:.5rem;
+  background:rgba(0,0,0,.62);
+  backdrop-filter:blur(4px);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:100px;
+  padding:.175rem .55rem;
+  font-size:.62rem;
+  font-weight:600;
+  color:var(--text);
+}
+
+/* ── CARD CONTENT ── */
+.card-body{padding:.875rem}
+
+.card-body h3{font-size:.875rem;font-weight:700;margin-bottom:.5rem}
+
+.prescription{
+  display:flex;
+  gap:.4rem;
+  flex-wrap:wrap;
+  margin-bottom:.5rem;
+}
+
+.presc{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  flex:1;
+  min-width:55px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:.5rem;
+  padding:.3rem .5rem;
+}
+
+.presc-val{font-size:.8rem;font-weight:700}
+.presc-lbl{font-size:.52rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:.1rem}
+
+.tip{
+  font-size:.7rem;
+  color:var(--muted);
+  line-height:1.55;
+  border-left:2px solid var(--a1);
+  padding-left:.5rem;
+  margin-bottom:.625rem;
+}
+
+.timer-btn{
+  width:100%;
+  padding:.5rem;
+  border-radius:.5rem;
+  border:1px solid var(--gborder);
+  background:var(--glass);
+  color:var(--text);
+  font-family:'Inter',system-ui,sans-serif;
+  font-size:.72rem;
+  font-weight:600;
+  cursor:pointer;
+  transition:all .2s ease;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:.3rem;
+}
+
+.timer-btn:hover{background:rgba(99,102,241,.18);border-color:var(--a1)}
+
+/* ── TIMER OVERLAY ── */
+#overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.7);
+  backdrop-filter:blur(10px);
+  z-index:1000;
+  display:none;
+  align-items:flex-end;
+  justify-content:center;
+  padding:1rem;
+}
+
+#overlay.show{display:flex}
+
+.timer-modal{
+  width:100%;
+  max-width:360px;
+  background:#1e293b;
+  border:1px solid var(--gborder);
+  border-radius:1.5rem;
+  padding:2rem 1.75rem;
+  text-align:center;
+  animation:slideUp .3s ease;
+}
+
+@keyframes slideUp{
+  from{transform:translateY(40px);opacity:0}
+  to  {transform:translateY(0);opacity:1}
+}
+
+.timer-lbl{font-size:.72rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:.75rem}
+
+.timer-track{
+  height:4px;
+  background:rgba(255,255,255,.07);
+  border-radius:100px;
+  overflow:hidden;
+  margin-bottom:1rem;
+}
+
+.timer-fill{
+  height:100%;
+  background:linear-gradient(90deg,var(--a1),var(--a2));
+  border-radius:100px;
+  transition:width 1s linear;
+}
+
+.timer-display{
+  font-size:5rem;
+  font-weight:800;
+  font-variant-numeric:tabular-nums;
+  background:linear-gradient(135deg,#fff,var(--a2));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  line-height:1;
+  margin-bottom:.5rem;
+}
+
+.timer-exname{font-size:.875rem;color:var(--muted);margin-bottom:1.5rem}
+
+.timer-actions{display:flex;gap:.625rem}
+
+.t-btn{
+  flex:1;
+  padding:.7rem 1rem;
+  border-radius:100px;
+  border:none;
+  font-family:'Inter',system-ui,sans-serif;
+  font-size:.8rem;
+  font-weight:700;
+  cursor:pointer;
+  transition:transform .15s ease;
+}
+
+.t-btn:hover{transform:translateY(-1px)}
+
+.t-primary{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff}
+.t-close{background:rgba(255,255,255,.07);color:var(--muted)}
+
+/* ── FOOTER ── */
+footer{
+  text-align:center;
+  padding:1.5rem 1rem;
+  border-top:1px solid var(--gborder);
+  color:var(--muted);
+  font-size:.72rem;
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:480px){
+  header h1{font-size:1.4rem}
+  .day-btn{padding:.6rem .875rem}
+  .grid{grid-template-columns:1fr}
+  .timer-display{font-size:4rem}
+}
+</style>
+</head>
+<body>
+
+<!-- Timer Overlay -->
+<div id="overlay">
+  <div class="timer-modal">
+    <p class="timer-lbl">⏱ Tempo de descanso</p>
+    <div class="timer-track"><div class="timer-fill" id="t-fill"></div></div>
+    <div class="timer-display" id="t-disp">01:30</div>
+    <p class="timer-exname" id="t-name"></p>
+    <div class="timer-actions">
+      <button class="t-btn t-close" id="t-close">Fechar</button>
+      <button class="t-btn t-primary" id="t-toggle">▶ Iniciar</button>
+    </div>
+  </div>
+</div>
+
+<header>
+  <div class="logo">🏋️</div>
+  <h1>Treino ABC</h1>
+  <p class="header-sub">Split ABCD · Hipertrofia</p>
+
+  <div class="day-buttons">
+    <button class="day-btn" data-day="Segunda">
+      <span class="b-icon">💪</span>
+      <span class="b-day">Segunda</span>
+      <span class="b-focus">Peito · Ombros · Tríceps</span>
+    </button>
+    <button class="day-btn" data-day="Terca">
+      <span class="b-icon">🦾</span>
+      <span class="b-day">Terça</span>
+      <span class="b-focus">Costas · Bíceps</span>
+    </button>
+    <button class="day-btn" data-day="Quinta">
+      <span class="b-icon">🦵</span>
+      <span class="b-day">Quinta</span>
+      <span class="b-focus">Pernas · Core</span>
+    </button>
+    <button class="day-btn" data-day="Sexta">
+      <span class="b-icon">🏋️</span>
+      <span class="b-day">Sexta</span>
+      <span class="b-focus">Ombros · Braços</span>
+    </button>
+  </div>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-meta">
+    <span id="prog-label">0 de 6 concluídos</span>
+    <span id="prog-pct">0%</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
+</div>
+
+<main>
+  <div id="day-header"></div>
+
+  <div class="section-card">
+    <span class="sc-icon">🔥</span>
+    <div class="sc-body">
+      <h3>Aquecimento (5-10 min)</h3>
+      <p>Rotações de ombros, quadril e tornozelos. 5-8 min de cardio leve (esteira ou bicicleta). Ative os músculos do dia com exercícios sem carga antes de carregar peso.</p>
+    </div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="section-card">
+    <span class="sc-icon">🧊</span>
+    <div class="sc-body">
+      <h3>Alongamento / Cool-down (5-10 min)</h3>
+      <p>Alongue cada grupo muscular trabalhado por 20-30s. Respire profundamente. Hidrate-se e registre o treino para acompanhar sua evolução.</p>
+    </div>
+  </div>
+</main>
+
+<footer>
+  ⚠️ Consulte um profissional de educação física e médico antes de iniciar qualquer programa de treinamento.
+</footer>
+
+<script>
+/* ══════════════════════════════════════
+   DADOS DO TREINO
+══════════════════════════════════════ */
+const TREINOS = {
+  Segunda:{
+    titulo:"Peito · Ombros · Tríceps",icone:"💪",cor:"#6366f1",
+    exercicios:[
+      {nome:"Supino Reto",img:"Segunda/supino_reto.png",musculo:"Peitoral Maior",
+       series:4,reps:"10-12",descanso:"90s",
+       dica:"Desça a barra até tocar levemente o peito. Escápulas retraídas durante todo o movimento."},
+      {nome:"Desenvolvimento Halter",img:"Segunda/desenvolvimento_halter.png",musculo:"Deltóide",
+       series:4,reps:"10-12",descanso:"90s",
+       dica:"Suba até os braços quase estendidos. Não trave os cotovelos no topo."},
+      {nome:"Desenvolvimento Máquina",img:"Segunda/desenvolvimento_maquina.png",musculo:"Deltóide",
+       series:3,reps:"12-15",descanso:"60s",
+       dica:"Ajuste o banco para os cotovelos ficarem em linha com os ombros ao iniciar."},
+      {nome:"Elevação Lateral",img:"Segunda/elevacao_lateral.png",musculo:"Deltóide Lateral",
+       series:3,reps:"15-20",descanso:"45s",
+       dica:"Leve até a altura dos ombros com leve flexão no cotovelo. Controle a descida."},
+      {nome:"Tríceps Corda",img:"Segunda/triceps_corda.png",musculo:"Tríceps",
+       series:3,reps:"12-15",descanso:"60s",
+       dica:"Abra a corda no final do movimento para ativar a cabeça lateral do tríceps."},
+      {nome:"Esteira",img:"Segunda/z_esteira.png",musculo:"Cardio",
+       series:1,reps:"20-30 min",descanso:"—",
+       dica:"65-75% da FCmáx. Mantenha postura ereta e não segure o corrimão."}
+    ]
+  },
+  Terca:{
+    titulo:"Costas · Bíceps",icone:"🦾",cor:"#10b981",
+    exercicios:[
+      {nome:"Puxada Frente",img:"Terca/puxada_frente.png",musculo:"Latíssimo do Dorso",
+       series:4,reps:"10-12",descanso:"90s",
+       dica:"Puxe até a barra tocar o alto do peito. Retraia as escápulas antes de puxar."},
+      {nome:"Remada Baixa",img:"Terca/remada_baixa.png",musculo:"Romboides · Latíssimo",
+       series:4,reps:"10-12",descanso:"90s",
+       dica:"Costas retas, puxe o cabo até o abdômen. Nunca arredonde a lombar."},
+      {nome:"Remada Máquina",img:"Terca/remada_maquina.png",musculo:"Costas Médias",
+       series:3,reps:"12-15",descanso:"60s",
+       dica:"Controle o retorno para manter tensão constante. Não balance o tronco."},
+      {nome:"Rosca Alternada",img:"Terca/rosca_alternada.png",musculo:"Bíceps",
+       series:3,reps:"12-15",descanso:"60s",
+       dica:"Supine o punho no topo do movimento para maior contração do bíceps."},
+      {nome:"Rosca Direta",img:"Terca/rosca_direta.png",musculo:"Bíceps Braquial",
+       series:3,reps:"10-12",descanso:"60s",
+       dica:"Cotovelos fixos ao lado do corpo. Sem impulso do tronco."},
+      {nome:"Esteira",img:"Terca/z_esteira.png",musculo:"Cardio",
+       series:1,reps:"20-30 min",descanso:"—",
+       dica:"65-75% da FCmáx. Mantenha postura ereta e não segure o corrimão."}
+    ]
+  },
+  Quinta:{
+    titulo:"Pernas · Core",icone:"🦵",cor:"#f59e0b",
+    exercicios:[
+      {nome:"Agachamento Smith",img:"Quinta/agachamento_smith.png",musculo:"Quadríceps · Glúteos",
+       series:4,reps:"10-12",descanso:"120s",
+       dica:"Desça até as coxas paralelas ao chão. Joelhos na direção dos pés durante todo o movimento."},
+      {nome:"Leg Press",img:"Quinta/leg_press.png",musculo:"Quadríceps · Glúteos",
+       series:4,reps:"12-15",descanso:"90s",
+       dica:"Não trave os joelhos. Desça de forma controlada por 3 segundos."},
+      {nome:"Cadeira Flexora",img:"Quinta/cadeira_flexora.png",musculo:"Isquiotibiais",
+       series:3,reps:"12-15",descanso:"60s",
+       dica:"Amplitude completa: extensão total e flexão máxima a cada repetição."},
+      {nome:"Mesa Flexora",img:"Quinta/mesa_flexora.png",musculo:"Isquiotibiais",
+       series:3,reps:"12-15",descanso:"60s",
+       dica:"Suba rápido, desça lento (3s). Foco na fase excêntrica."},
+      {nome:"Panturrilha",img:"Quinta/panturrilha.png",musculo:"Gastrocnêmio · Sóleo",
+       series:4,reps:"20-25",descanso:"45s",
+       dica:"Desça até o máximo de alongamento antes de subir. Amplitude completa."},
+      {nome:"Esteira",img:"Quinta/z_esteira.png",musculo:"Cardio",
+       series:1,reps:"20-30 min",descanso:"—",
+       dica:"65-75% da FCmáx. Mantenha postura ereta e não segure o corrimão."}
+    ]
+  },
+  Sexta:{
+    titulo:"Ombros · Braços",icone:"🏋️",cor:"#ec4899",
+    exercicios:[
+      {nome:"Desenvolvimento Halter",img:"Sexta/desenvolvimento_halter.png",musculo:"Deltóide",
+       series:4,reps:"10-12",descanso:"90s",
+       dica:"Controle a descida até a linha dos ombros. Não arqueie a lombar."},
+      {nome:"Desenvolvimento Máquina",img:"Sexta/desenvolvimento_maquina.png",musculo:"Deltóide",
+       series:3,reps:"12-15",descanso:"60s",
+       dica:"Cotovelos em linha com os ombros ao iniciar. Amplitude completa."},
+      {nome:"Elevação Lateral",img:"Sexta/elevacao_lateral.png",musculo:"Deltóide Lateral",
+       series:3,reps:"15-20",descanso:"45s",
+       dica:"Leve até a altura dos ombros. Pequena flexão no cotovelo para proteção articular."},
+      {nome:"Rosca Alternada",img:"Terca/rosca_alternada.png",musculo:"Bíceps",
+       series:3,reps:"12-15",descanso:"60s",
+       dica:"Supine o punho no topo para maior contração do bíceps."},
+      {nome:"Rosca Direta",img:"Terca/rosca_direta.png",musculo:"Bíceps Braquial",
+       series:3,reps:"10-12",descanso:"60s",
+       dica:"Cotovelos fixos ao lado do corpo. Sem impulso do tronco."},
+      {nome:"Tríceps Corda",img:"Sexta/triceps_corda.png",musculo:"Tríceps",
+       series:3,reps:"12-15",descanso:"60s",
+       dica:"Abra a corda no final do movimento para ativar a cabeça lateral do tríceps."}
+    ]
+  }
+};
+
+/* ══════════════════════════════════════
+   DETECÇÃO DO DIA ATUAL
+══════════════════════════════════════ */
+const DAY_MAP = {1:"Segunda",2:"Terca",4:"Quinta",5:"Sexta"};
+const todayKey = DAY_MAP[new Date().getDay()] || null;
+
+/* ══════════════════════════════════════
+   LOCALSTORAGE
+══════════════════════════════════════ */
+function storageKey(day){
+  return `treino_${day}_${new Date().toLocaleDateString("pt-BR")}`;
+}
+function loadDone(day){
+  try{return JSON.parse(localStorage.getItem(storageKey(day)))||[];}
+  catch{return [];}
+}
+function saveDone(day,list){
+  localStorage.setItem(storageKey(day),JSON.stringify(list));
+}
+
+/* ══════════════════════════════════════
+   DOM
+══════════════════════════════════════ */
+const grid       = document.getElementById("grid");
+const dayHeader  = document.getElementById("day-header");
+const progFill   = document.getElementById("prog-fill");
+const progPct    = document.getElementById("prog-pct");
+const progLabel  = document.getElementById("prog-label");
+const buttons    = document.querySelectorAll(".day-btn");
+
+let currentDay = null;
+
+/* ══════════════════════════════════════
+   RENDER
+══════════════════════════════════════ */
+function render(day){
+  currentDay = day;
+  const data = TREINOS[day];
+  const done = loadDone(day);
+
+  dayHeader.innerHTML=`
+    <div class="day-header">
+      <span class="dh-icon">${data.icone}</span>
+      <div>
+        <div class="dh-title">${data.titulo}</div>
+        <div class="dh-sub">${data.exercicios.length} exercícios</div>
+      </div>
+    </div>`;
+
+  updateProgress(done.length, data.exercicios.length);
+  grid.innerHTML="";
+
+  data.exercicios.forEach((ex,i)=>{
+    const isDone = done.includes(i);
+    const card   = document.createElement("div");
+    card.className = `card${isDone?" done":""}`;
+    card.style.animationDelay = `${i*0.06}s`;
+
+    const hasTimer = ex.descanso !== "—";
+    const timerSec = parseDescanso(ex.descanso);
+
+    card.innerHTML=`
+      <div class="card-img">
+        <img src="${ex.img}" alt="${ex.nome} — ${ex.musculo}" loading="lazy"/>
+        <button class="check-btn" title="${isDone?"Desmarcar":"Marcar como feito"}">${isDone?"✓":""}</button>
+        <span class="muscle-tag">${ex.musculo}</span>
+      </div>
+      <div class="card-body">
+        <h3>${ex.nome}</h3>
+        <div class="prescription">
+          <div class="presc"><span class="presc-val">${ex.series}</span><span class="presc-lbl">Séries</span></div>
+          <div class="presc"><span class="presc-val">${ex.reps}</span><span class="presc-lbl">Reps</span></div>
+          <div class="presc"><span class="presc-val">${ex.descanso}</span><span class="presc-lbl">Descanso</span></div>
+        </div>
+        <p class="tip">${ex.dica}</p>
+        ${hasTimer?`<button class="timer-btn" data-sec="${timerSec}" data-name="${ex.nome}">⏱ Iniciar descanso (${ex.descanso})</button>`:""}
+      </div>`;
+
+    card.querySelector(".check-btn").addEventListener("click",()=>toggleDone(i));
+    card.querySelector(".timer-btn")?.addEventListener("click",e=>{
+      const b = e.currentTarget;
+      startTimer(+b.dataset.sec, b.dataset.name);
+    });
+
+    grid.appendChild(card);
+  });
+}
+
+function parseDescanso(str){
+  const m = str.match(/(\d+)/);
+  return m ? +m[1] : 60;
+}
+
+function updateProgress(done,total){
+  const pct = total>0 ? Math.round(done/total*100) : 0;
+  progFill.style.width = `${pct}%`;
+  progPct.textContent  = `${pct}%`;
+  progLabel.textContent= `${done} de ${total} concluídos`;
+}
+
+function toggleDone(idx){
+  const day   = currentDay;
+  const total = TREINOS[day].exercicios.length;
+  let done    = loadDone(day);
+  if(done.includes(idx)) done = done.filter(i=>i!==idx);
+  else done.push(idx);
+  saveDone(day, done);
+
+  const cards = grid.querySelectorAll(".card");
+  const card  = cards[idx];
+  if(!card) return;
+  const isDone = done.includes(idx);
+  card.classList.toggle("done", isDone);
+  const cb = card.querySelector(".check-btn");
+  if(cb){ cb.textContent = isDone?"✓":""; cb.title = isDone?"Desmarcar":"Marcar como feito"; }
+  updateProgress(done.length, total);
+}
+
+/* ══════════════════════════════════════
+   TIMER
+══════════════════════════════════════ */
+let timerSec=0, timerTotal=0, timerRunning=false, timerInterval=null;
+
+const overlay    = document.getElementById("overlay");
+const tDisp      = document.getElementById("t-disp");
+const tFill      = document.getElementById("t-fill");
+const tName      = document.getElementById("t-name");
+const tToggleBtn = document.getElementById("t-toggle");
+
+function fmt(s){
+  if(s<=0) return "00:00";
+  return `${String(Math.floor(s/60)).padStart(2,"0")}:${String(s%60).padStart(2,"0")}`;
+}
+
+function startTimer(sec,name){
+  clearInterval(timerInterval);
+  timerSec=sec; timerTotal=sec; timerRunning=false;
+  tDisp.textContent=fmt(sec);
+  tFill.style.transition="none";
+  tFill.style.width="100%";
+  tName.textContent=name;
+  tToggleBtn.textContent="▶ Iniciar";
+  overlay.classList.add("show");
+}
+
+function toggleTimer(){
+  if(timerRunning){
+    clearInterval(timerInterval);
+    timerRunning=false;
+    tToggleBtn.textContent="▶ Continuar";
+  } else {
+    timerRunning=true;
+    tToggleBtn.textContent="⏸ Pausar";
+    tFill.style.transition="width 1s linear";
+    timerInterval=setInterval(()=>{
+      timerSec--;
+      tDisp.textContent=fmt(timerSec);
+      tFill.style.width=`${Math.max(0,timerSec/timerTotal*100)}%`;
+      if(timerSec<=0){
+        clearInterval(timerInterval);
+        timerRunning=false;
+        tToggleBtn.textContent="↺ Reiniciar";
+        if(navigator.vibrate) navigator.vibrate([300,100,300]);
+        beep();
+      }
+    },1000);
+  }
+}
+
+function closeTimer(){
+  clearInterval(timerInterval);
+  timerRunning=false;
+  overlay.classList.remove("show");
+}
+
+function beep(){
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    [880,1100].forEach((f,i)=>{
+      const o=ctx.createOscillator();
+      const g=ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.frequency.value=f;
+      const t=ctx.currentTime+i*0.35;
+      g.gain.setValueAtTime(0.3,t);
+      g.gain.exponentialRampToValueAtTime(0.001,t+0.3);
+      o.start(t); o.stop(t+0.3);
+    });
+  }catch(e){}
+}
+
+document.getElementById("t-toggle").addEventListener("click",()=>{
+  if(timerSec<=0){ startTimer(timerTotal, tName.textContent); }
+  else toggleTimer();
+});
+document.getElementById("t-close").addEventListener("click",closeTimer);
+overlay.addEventListener("click",e=>{ if(e.target===overlay) closeTimer(); });
+
+/* ══════════════════════════════════════
+   NAVEGAÇÃO
+══════════════════════════════════════ */
+buttons.forEach(btn=>{
+  const day=btn.dataset.day;
+  if(day===todayKey) btn.classList.add("hoje");
+  btn.addEventListener("click",()=>{
+    buttons.forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    render(day);
+  });
+});
+
+/* ══════════════════════════════════════
+   INIT
+══════════════════════════════════════ */
+const initialDay = todayKey || "Segunda";
+const initialBtn = [...buttons].find(b=>b.dataset.day===initialDay)||buttons[0];
+initialBtn.classList.add("active");
+render(initialDay);
+
+/* ══════════════════════════════════════
+   PWA
+══════════════════════════════════════ */
+if("serviceWorker" in navigator){
+  window.addEventListener("load",()=>{
+    navigator.serviceWorker.register("sw.js").catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>
